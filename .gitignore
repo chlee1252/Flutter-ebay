@@ -1,3 +1,5 @@
+./lib/appID.dart
+
 # Miscellaneous
 *.class
 *.log
