@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 class SearchPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return new SearchPageState();
   }
 }
