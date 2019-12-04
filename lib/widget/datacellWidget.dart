@@ -51,7 +51,7 @@ class ProductDataCell extends StatelessWidget {
                                 new Text(
                                   product.condition,
                                   style: TextStyle(
-                                      fontSize: 12.0,
+                                      fontSize: 11.0,
                                       color: Color.fromRGBO(36, 109, 116, 1.0),
                                       fontWeight: FontWeight.bold),
                                 )
