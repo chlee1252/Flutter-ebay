@@ -14,9 +14,8 @@ class ProductDataCell extends StatelessWidget {
             padding: new EdgeInsets.all(16.0),
             child: new Row(
               children: <Widget>[
-                new Image.network(
-                  product.galleryURL,
-                ),
+                new Image.network(product.galleryURL,
+                    width: MediaQuery.of(context).size.width / 3),
                 new Container(
                   width: 16.0,
                 ),
