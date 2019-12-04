@@ -17,10 +17,14 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
+  Icon cusIcon = Icon(Icons.search);
+  Widget cusSearchBar = Text("eBay Search");
+
+  var keyword = "nike";
   var _isLoading = true;
   var prevKeyword = '';
   var pageNumber = 1;
-  var totalPages;
+  var totalPages = 0;
   final productData = new List<Product>();
   final url =
       "http://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=findItemsByKeywords&SERVICE-VERSION=1.0.0&";
@@ -37,7 +41,7 @@ class MyAppState extends State<MyApp> {
               _scrollController.position.maxScrollExtent &&
           this.pageNumber < totalPages) {
         this.pageNumber++;
-        _fetchData("nike oregon ducks backpack", this.pageNumber.toString());
+        _fetchData(this.keyword, this.pageNumber.toString());
       }
     });
   }
@@ -50,13 +54,11 @@ class MyAppState extends State<MyApp> {
 
   _fetchData(String keyword, String pageNumber) async {
     if (this.prevKeyword != keyword) {
-      // print("inside the if statement");
       productData.clear();
       this.prevKeyword = keyword;
       this.pageNumber = 1;
       pageNumber = "1";
     }
-    // productData.clear();
     final completeURL = url +
         appIDURL +
         "&keywords=$keyword" +
@@ -72,18 +74,29 @@ class MyAppState extends State<MyApp> {
           dataJson['findItemsByKeywordsResponse'][0]['searchResult'][0]["item"];
       final totalpage = dataJson['findItemsByKeywordsResponse'][0]
           ['paginationOutput'][0]['totalPages'][0];
-      items.forEach((i) {
-        final item = new Product(
-            title: i['title'][0],
-            galleryURL: i['galleryURL'][0],
-            price: i['sellingStatus'][0]['currentPrice'][0]['__value__'] +
-                " " +
-                i['sellingStatus'][0]['currentPrice'][0]['@currencyId'],
-            shipping: i['shippingInfo'][0]['shippingType'][0] + " shipping",
-            condition: i['condition'][0]['conditionDisplayName'][0]);
-        productData.add(item);
-      });
       this.totalPages = int.parse(totalpage);
+      if (this.totalPages != 0) {
+        items.forEach((i) {
+          var condition = i['condition'] != null
+              ? i['condition'][0]['conditionDisplayName'][0]
+              : "Not provided";
+          final shipInfo = i['shippingInfo'][0]['shippingServiceCost'];
+          var shipCost = shipInfo != null
+              ? double.parse(shipInfo[0]['__value__']) == 0.0
+                  ? "Free"
+                  : shipInfo[0]['__value__'] + shipInfo[0]['@currencyId']
+              : i['shippingInfo'][0]['shippingType'][0];
+          final item = new Product(
+              title: i['title'][0],
+              galleryURL: i['galleryURL'][0],
+              price: i['sellingStatus'][0]['currentPrice'][0]['__value__'] +
+                  " " +
+                  i['sellingStatus'][0]['currentPrice'][0]['@currencyId'],
+              shipping: shipCost + " shipping",
+              condition: condition);
+          productData.add(item);
+        });
+      }
       setState(() {
         _isLoading = false;
       });
@@ -95,16 +108,32 @@ class MyAppState extends State<MyApp> {
     return new MaterialApp(
         home: new Scaffold(
       appBar: new AppBar(
-        title: new Text("eBay Search"),
+        backgroundColor: Color.fromRGBO(164, 175, 195, 1.0),
+        title: this.cusSearchBar,
         actions: <Widget>[
           new IconButton(
-            icon: new Icon(Icons.search),
+            icon: this.cusIcon,
             onPressed: () {
               setState(() {
-                _isLoading = true;
+                if (this.cusIcon.icon == Icons.search) {
+                  this.cusIcon = Icon(Icons.cancel);
+                  this.cusSearchBar = TextField(
+                    decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "Search for anything",
+                        hintStyle: TextStyle(color: Colors.white)),
+                    textInputAction: TextInputAction.go,
+                    style: TextStyle(color: Colors.white),
+                    onSubmitted: (value) {
+                      this.keyword = value;
+                      _fetchData(value, this.pageNumber.toString());
+                    },
+                  );
+                } else {
+                  this.cusIcon = Icon(Icons.search);
+                  this.cusSearchBar = Text("eBay Search");
+                }
               });
-              _fetchData(
-                  "nike oregon ducks backpack", this.pageNumber.toString());
             },
           )
         ],
@@ -112,25 +141,33 @@ class MyAppState extends State<MyApp> {
       body: new Center(
           child: _isLoading
               ? new CircularProgressIndicator()
-              : new ListView.builder(
-                  controller: _scrollController,
-                  itemCount:
-                      this.productData != null ? this.productData.length : 0,
-                  itemBuilder: (context, i) {
-                    final prod = this.productData[i];
-                    return new FlatButton(
-                      padding: new EdgeInsets.all(0.0),
-                      child: new ProductDataCell(product: prod),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                                builder: (context) =>
-                                    new DetailPage(product: prod)));
+              : this.productData.length != 0
+                  ? new ListView.builder(
+                      controller: _scrollController,
+                      itemCount: this.productData != null
+                          ? this.productData.length
+                          : 0,
+                      itemBuilder: (context, i) {
+                        final prod = this.productData[i];
+                        return new FlatButton(
+                          padding: new EdgeInsets.all(0.0),
+                          child: new ProductDataCell(product: prod),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                new MaterialPageRoute(
+                                    builder: (context) =>
+                                        new DetailPage(product: prod)));
+                          },
+                        );
                       },
-                    );
-                  },
-                )),
+                    )
+                  : Center(
+                      child: Text('Oops! No exact matches found.',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                          )))),
     ));
   }
 }
