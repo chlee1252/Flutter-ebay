@@ -26,7 +26,7 @@ class MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _fetchData("macbook");
+    _fetchData("nike");
   }
 
   _fetchData(String keyword) async {
@@ -51,7 +51,8 @@ class MyAppState extends State<MyApp> {
             price: i['sellingStatus'][0]['currentPrice'][0]['__value__'] +
                 " " +
                 i['sellingStatus'][0]['currentPrice'][0]['@currencyId'],
-            shipping: i['shippingInfo'][0]['shippingType'][0] + " shipping");
+            shipping: i['shippingInfo'][0]['shippingType'][0] + " shipping",
+            condition: i['condition'][0]['conditionDisplayName'][0]);
         productData.add(item);
       });
       setState(() {
@@ -73,7 +74,7 @@ class MyAppState extends State<MyApp> {
               setState(() {
                 _isLoading = true;
               });
-              _fetchData("macbook");
+              _fetchData("nike oregon ducks backpack");
             },
           )
         ],
