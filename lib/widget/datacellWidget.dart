@@ -12,38 +12,54 @@ class ProductDataCell extends StatelessWidget {
       children: <Widget>[
         new Container(
             padding: new EdgeInsets.all(16.0),
-            child: new Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            child: new Row(
               children: <Widget>[
-                new Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 200,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          fit: BoxFit.fill,
-                          image: NetworkImage(product.galleryURL))),
+                new Image.network(
+                  product.galleryURL,
                 ),
-                // new Image.network(product.galleryURL, fit: BoxFit.fill),
                 new Container(
-                  height: 8.0,
+                  width: 16.0,
                 ),
-                new Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                new Column(
                   children: <Widget>[
-                    new Container(width: 16.0),
-                    new Flexible(
+                    new Container(
+                        width: MediaQuery.of(context).size.width / 2,
                         child: new Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        new Text(product.title,
-                            style: new TextStyle(
-                                fontSize: 16.0, fontWeight: FontWeight.bold)),
-                        new Container(
-                          height: 4.0,
-                        ),
-                        new Text(product.price + " + " + product.shipping),
-                      ],
-                    ))
+                          children: <Widget>[
+                            new Text(product.title,
+                                style: new TextStyle(
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold)),
+                            new Container(height: 8.0),
+                            new FittedBox(
+                                child: new Row(
+                              children: <Widget>[
+                                new Text(product.price + " + "),
+                                new Text(product.shipping,
+                                    style: TextStyle(
+                                        color: Color.fromRGBO(0, 184, 157, 1),
+                                        fontWeight: FontWeight.bold))
+                              ],
+                            )),
+                            new Container(height: 3.0),
+                            new Container(
+                                child: new Row(
+                              children: <Widget>[
+                                new Text(
+                                  "Condition: ",
+                                  style: TextStyle(fontSize: 12.0),
+                                ),
+                                new Text(
+                                  product.condition,
+                                  style: TextStyle(
+                                      fontSize: 12.0,
+                                      color: Color.fromRGBO(36, 109, 116, 1.0),
+                                      fontWeight: FontWeight.bold),
+                                )
+                              ],
+                            ))
+                          ],
+                        ))
                   ],
                 )
               ],
