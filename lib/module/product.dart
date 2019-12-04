@@ -5,7 +5,12 @@ class Product {
   final String galleryURL;
   final String price;
   final String shipping;
+  final String condition;
 
   const Product(
-      {@required this.title, this.galleryURL, this.price, this.shipping});
+      {@required this.title,
+      this.galleryURL,
+      this.price,
+      this.shipping,
+      this.condition});
 }
